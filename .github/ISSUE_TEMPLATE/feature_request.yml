@@ -1,0 +1,30 @@
+name: Feature request
+description: Propose a new feature
+labels: [feature]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List clear acceptance criteria.
+    validations:
+      required: true
+  - type: textarea
+    id: atp
+    attributes:
+      label: ATP impact
+      description: What ATP scenarios should be added or updated?
