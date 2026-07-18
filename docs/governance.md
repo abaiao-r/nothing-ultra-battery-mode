@@ -1,0 +1,54 @@
+# Governance, Architecture, and DoD
+
+## Testing Policy
+
+Required on every PR:
+
+- Lint
+- Build
+- Unit tests
+- ATP tests
+- Governance checks (branch name, one commit, PR template sections, issue link)
+
+Main and nightly:
+
+- ATP full run
+- Emulator flow suite after Android scaffold is added
+
+## Architecture Contracts
+
+- Stack: Kotlin, Compose, MVVM, StateFlow, Hilt
+- Multi-module from day one
+- Strict flow: Screen -> ViewModel -> UseCase -> Repository
+- No Screen -> Repository direct calls
+- No ViewModel -> Repository direct calls without UseCase
+
+## Module Baseline
+
+- `:app`
+- `:feature-ultra-mode`
+- `:feature-allowlist`
+- `:feature-estimation`
+- `:core-system`
+- `:core-data`
+- `:testing-atp`
+
+`core-system` must expose interfaces so future root implementations can plug in without feature-layer rewrites.
+
+## Definition of Done
+
+A PR is done only when:
+
+1. Linked issue present.
+2. Branch naming follows convention.
+3. Required CI checks are green.
+4. Unit and ATP coverage exists for changed behavior.
+5. ATP scenarios updated or justified as not impacted.
+6. PR includes clear test steps.
+7. Documentation updated.
+8. Diagrams updated when behavior or architecture changed.
+
+## Release Policy
+
+- Versioning: `v0.x.y` during build-out
+- Release gate: required checks green, ATP green, manual sanity on Nothing Phone 3a Pro
