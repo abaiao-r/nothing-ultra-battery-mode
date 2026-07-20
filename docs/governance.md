@@ -22,10 +22,13 @@ Main and nightly:
 - Strict flow: Screen -> ViewModel -> UseCase -> Repository
 - No Screen -> Repository direct calls
 - No ViewModel -> Repository direct calls without UseCase
+- UI components must be modular and reusable, built in `:ui-components`
+- Each new reusable UI component is delivered in its own PR, not bundled with feature logic PRs
 
 ## Module Baseline
 
 - `:app`
+- `:ui-components`
 - `:feature-ultra-mode`
 - `:feature-allowlist`
 - `:feature-estimation`
@@ -34,6 +37,8 @@ Main and nightly:
 - `:testing-atp`
 
 `core-system` must expose interfaces so future root implementations can plug in without feature-layer rewrites.
+
+`ui-components` contains shared, reusable Compose UI: theme tokens (black minimalist theme), buttons, toggles, cards, list rows. Feature modules depend on `ui-components` but never duplicate shared UI logic locally.
 
 ## Definition of Done
 
@@ -47,6 +52,7 @@ A PR is done only when:
 6. PR includes clear test steps.
 7. Documentation updated.
 8. Diagrams updated when behavior or architecture changed.
+9. New reusable UI components live in `:ui-components` and ship in their own dedicated PR.
 
 ## Release Policy
 
