@@ -1,0 +1,42 @@
+name: PR Governance
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch naming
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          if ! echo "$BRANCH" | grep -Eq '^(feature|bugfix)/[0-9]+-[a-z0-9_-]+$'; then
+            echo "Invalid branch name. Use feature/<issueid>-<ticket_name> or bugfix/<issueid>-<ticket_name>."
+            exit 1
+          fi
+
+      - name: Check one commit policy
+        run: |
+          COMMITS=${{ github.event.pull_request.commits }}
+          if [ "$COMMITS" -gt 1 ]; then
+            echo "Branch must contain exactly one commit."
+            exit 1
+          fi
+
+      - name: Check PR template sections
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          echo "$BODY" | grep -qi "Issue" || (echo "Missing Issue section" && exit 1)
+          echo "$BODY" | grep -qi "ATP Scenarios" || (echo "Missing ATP Scenarios section" && exit 1)
+          echo "$BODY" | grep -qi "How to Test" || (echo "Missing How to Test section" && exit 1)
+
+      - name: Check issue link presence
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          echo "$BODY" | grep -Eq '(#([0-9]+)|/issues/[0-9]+)' || (echo "PR must link an issue" && exit 1)
