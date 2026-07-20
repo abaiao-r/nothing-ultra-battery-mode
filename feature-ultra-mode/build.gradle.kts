@@ -32,6 +32,10 @@ dependencies {
     implementation(project(":ui-components"))
     implementation(project(":core-system"))
     implementation(project(":core-data"))
+    // Reuses EstimateBatteryTimeUseCase to show a live battery estimate on the Ultra Mode
+    // screen (issue #15) — a deliberate, narrow exception to the "feature modules never depend
+    // on each other" convention, to avoid duplicating the estimate formula.
+    implementation(project(":feature-estimation"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

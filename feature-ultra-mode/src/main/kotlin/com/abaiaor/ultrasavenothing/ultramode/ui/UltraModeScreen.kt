@@ -13,11 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.abaiaor.ultrasavenothing.uicomponents.estimate.BatteryEstimateCard
 import com.abaiaor.ultrasavenothing.uicomponents.toggle.UltraModeToggle
 
 /**
- * Single screen showing whether Ultra Mode is on or off and letting the user toggle it.
- * All state and toggle handling is delegated to [UltraModeViewModel].
+ * Single screen showing whether Ultra Mode is on or off, a live battery estimate, and letting
+ * the user toggle Ultra Mode. All state and toggle handling is delegated to [UltraModeViewModel].
  */
 @Composable
 fun UltraModeScreen(
@@ -25,9 +26,11 @@ fun UltraModeScreen(
     viewModel: UltraModeViewModel = hiltViewModel(),
 ) {
     val isEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
+    val estimateLabel by viewModel.estimateLabel.collectAsStateWithLifecycle()
 
     UltraModeScreenContent(
         isEnabled = isEnabled,
+        estimateLabel = estimateLabel,
         onToggle = viewModel::onToggle,
         modifier = modifier,
     )
@@ -36,6 +39,7 @@ fun UltraModeScreen(
 @Composable
 internal fun UltraModeScreenContent(
     isEnabled: Boolean,
+    estimateLabel: String,
     onToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -53,6 +57,10 @@ internal fun UltraModeScreenContent(
         UltraModeToggle(
             isEnabled = isEnabled,
             onToggle = onToggle,
+            modifier = Modifier.padding(top = 24.dp),
+        )
+        BatteryEstimateCard(
+            estimateLabel = estimateLabel,
             modifier = Modifier.padding(top = 24.dp),
         )
     }
