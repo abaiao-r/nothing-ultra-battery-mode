@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.abaiaor.ultrasavenothing.coredata.allowlist.AllowlistRepository
+import com.abaiaor.ultrasavenothing.coredata.allowlist.AllowlistRepositoryImpl
 import com.abaiaor.ultrasavenothing.coredata.ultramode.UltraModeStateRepository
 import com.abaiaor.ultrasavenothing.coredata.ultramode.UltraModeStateRepositoryImpl
 import dagger.Binds
@@ -38,4 +40,15 @@ internal abstract class UltraModeStateModule {
     abstract fun bindUltraModeStateRepository(
         impl: UltraModeStateRepositoryImpl,
     ): UltraModeStateRepository
+}
+
+/** Binds [AllowlistRepository] to its DataStore-backed implementation. */
+@Module
+@InstallIn(SingletonComponent::class)
+internal abstract class AllowlistModule {
+
+    @Binds
+    abstract fun bindAllowlistRepository(
+        impl: AllowlistRepositoryImpl,
+    ): AllowlistRepository
 }
