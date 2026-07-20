@@ -1,0 +1,70 @@
+package com.abaiaor.ultrasavenothing.ultramode.ui
+
+import com.abaiaor.ultrasavenothing.ultramode.domain.DisableUltraModeUseCase
+import com.abaiaor.ultrasavenothing.ultramode.domain.EnableUltraModeUseCase
+import com.abaiaor.ultrasavenothing.ultramode.domain.FakeSystemProfileRepository
+import com.abaiaor.ultrasavenothing.ultramode.domain.FakeUltraModeStateRepository
+import com.abaiaor.ultrasavenothing.ultramode.domain.ObserveUltraModeStateUseCase
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+
+class UltraModeViewModelTest {
+
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    private lateinit var systemProfileRepository: FakeSystemProfileRepository
+    private lateinit var ultraModeStateRepository: FakeUltraModeStateRepository
+    private lateinit var viewModel: UltraModeViewModel
+
+    private fun createViewModel(initiallyEnabled: Boolean = false) {
+        systemProfileRepository = FakeSystemProfileRepository()
+        ultraModeStateRepository = FakeUltraModeStateRepository(initiallyEnabled)
+        viewModel = UltraModeViewModel(
+            observeUltraModeStateUseCase = ObserveUltraModeStateUseCase(ultraModeStateRepository),
+            enableUltraModeUseCase = EnableUltraModeUseCase(systemProfileRepository, ultraModeStateRepository),
+            disableUltraModeUseCase = DisableUltraModeUseCase(systemProfileRepository, ultraModeStateRepository),
+        )
+    }
+
+    @Before
+    fun setUp() {
+        createViewModel()
+    }
+
+    @Test
+    fun `WHEN initial state is disabled THEN isEnabled starts false`() = runTest {
+        assertFalse(viewModel.isEnabled.value)
+    }
+
+    @Test
+    fun `WHEN created with persisted enabled state THEN isEnabled starts true`() = runTest {
+        createViewModel(initiallyEnabled = true)
+
+        assertTrue(viewModel.isEnabled.value)
+    }
+
+    @Test
+    fun `WHEN onToggle is called with true THEN ultra mode is enabled end to end`() = runTest {
+        viewModel.onToggle(true)
+
+        assertTrue(ultraModeStateRepository.isEnabled.first())
+        assertEquals(1, systemProfileRepository.applyUltraProfileCallCount)
+    }
+
+    @Test
+    fun `WHEN onToggle is called with false THEN ultra mode is disabled end to end`() = runTest {
+        createViewModel(initiallyEnabled = true)
+
+        viewModel.onToggle(false)
+
+        assertFalse(ultraModeStateRepository.isEnabled.first())
+        assertEquals(1, systemProfileRepository.revertUltraProfileCallCount)
+    }
+}
