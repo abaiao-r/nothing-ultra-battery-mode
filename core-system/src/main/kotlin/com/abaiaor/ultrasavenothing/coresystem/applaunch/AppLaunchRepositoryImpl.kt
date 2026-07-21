@@ -52,4 +52,12 @@ class AppLaunchRepositoryImpl @Inject constructor(
             context.startActivity(intent)
         }
     }
+
+    override fun defaultDialerPackageName(): String? {
+        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
+        return runCatching { telecomManager?.defaultDialerPackage }.getOrNull()
+    }
+
+    override fun defaultMessagingPackageName(): String? =
+        runCatching { Telephony.Sms.getDefaultSmsPackage(context) }.getOrNull()
 }

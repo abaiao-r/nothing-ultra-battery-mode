@@ -2,6 +2,8 @@ package com.abaiaor.ultrasavenothing.ultramode.ui
 
 import com.abaiaor.ultrasavenothing.ultramode.domain.DisableUltraModeUseCase
 import com.abaiaor.ultrasavenothing.ultramode.domain.EnableUltraModeUseCase
+import com.abaiaor.ultrasavenothing.ultramode.domain.FakeRootCapabilityRepository
+import com.abaiaor.ultrasavenothing.ultramode.domain.FakeRootProcessControlRepository
 import com.abaiaor.ultrasavenothing.ultramode.domain.FakeSystemProfileRepository
 import com.abaiaor.ultrasavenothing.ultramode.domain.FakeUltraModeAllowlistRepository
 import com.abaiaor.ultrasavenothing.ultramode.domain.FakeUltraModeBatteryInfoRepository
@@ -39,8 +41,17 @@ class UltraModeViewModelTest {
         viewModel = UltraModeViewModel(
             observeUltraModeStateUseCase = ObserveUltraModeStateUseCase(ultraModeStateRepository),
             estimateBatteryTimeUseCase = EstimateBatteryTimeUseCase(batteryInfoRepository, allowlistRepository),
-            enableUltraModeUseCase = EnableUltraModeUseCase(systemProfileRepository, ultraModeStateRepository),
-            disableUltraModeUseCase = DisableUltraModeUseCase(systemProfileRepository, ultraModeStateRepository),
+            enableUltraModeUseCase = EnableUltraModeUseCase(
+                systemProfileRepository,
+                ultraModeStateRepository,
+                FakeRootCapabilityRepository(isRootAvailable = false),
+                FakeRootProcessControlRepository(),
+            ),
+            disableUltraModeUseCase = DisableUltraModeUseCase(
+                systemProfileRepository,
+                ultraModeStateRepository,
+                FakeRootProcessControlRepository(),
+            ),
         )
     }
 

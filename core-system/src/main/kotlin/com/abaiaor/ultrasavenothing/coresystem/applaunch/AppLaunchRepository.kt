@@ -14,4 +14,10 @@ interface AppLaunchRepository {
 
     /** Launches the device's current default Messaging (SMS) app. */
     fun launchMessagingApp()
+
+    /** The package name of the device's current default Phone (dialer) app, if resolvable. */
+    fun defaultDialerPackageName(): String?
+
+    /** The package name of the device's current default Messaging (SMS) app, if resolvable. */
+    fun defaultMessagingPackageName(): String?
 }
