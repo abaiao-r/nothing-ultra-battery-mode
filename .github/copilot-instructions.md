@@ -3,12 +3,18 @@
 ## What is this?
 
 An Android app (Kotlin) that replicates a Xiaomi/HyperOS-style "Ultra Battery Saver" mode for a
-Nothing Phone 3a Pro. No-root first, with architecture designed to allow a future root-based
-extension without rewriting feature code.
+Nothing Phone 3a Pro. Ships a no-root feature set by default, plus a real root-powered mode that
+activates automatically when the device has root (`su`) access and safely no-ops otherwise —
+implementation is selected at runtime, feature code never needs to know which one is active.
 
 Core behavior: black minimalist UI, Calls/SMS always available, user-configurable allowlist of
 extra apps (hard cap 10), a battery time estimate that drops as more apps are allowed, and a
-temporary launcher-shell takeover while the mode is active.
+temporary launcher-shell takeover while the mode is active. On a rooted device, Ultra Mode
+additionally: force-enables system Battery Saver, disables Wi-Fi/mobile data, forces dark theme,
+caps per-core CPU max frequency, and periodically force-stops any installed app not on the
+allowlist (except the default dialer/messaging apps) — the genuine Xiaomi-style behavior that is
+otherwise impossible for a third-party app without root, since Android sandboxes apps from
+OS-level control that Xiaomi's MIUI ships with by default.
 
 ## Stack
 
@@ -47,9 +53,14 @@ Full rationale and module contracts: `docs/architecture.md` and `docs/governance
 :feature-allowlist      allowed apps management
 :feature-estimation     battery time estimate
 :core-system            interfaces for system actions (audio, vibration, battery saver,
-                        launcher role) - root-ready: a future root module can provide
-                        alternate implementations without touching feature modules
-:core-data              DataStore + repository implementations
+                        launcher role, root shell/capability) - contains both the no-root
+                        implementations and the real root-shell-backed ones
+                        (RootCapabilityRepository, RootShellExecutor,
+                        RootSystemProfileRepositoryImpl); runtime selection happens via a
+                        Hilt @Provides module, feature modules are unaware which is active
+:core-data              DataStore + repository implementations, plus root-only repositories
+                        that need both :core-system and another :core-data repository
+                        (e.g. RootProcessControlRepositoryImpl needs AllowlistRepository)
 :testing-atp            ATP runner/config, feature files, step definitions
 ```
 
@@ -87,6 +98,12 @@ Rule of thumb:
 - A full user story/flow (e.g. "enabling Ultra Mode applies the strict profile") -> ATP scenario
 - Pure, stateless UI components in `:ui-components` -> Compose previews/component tests, NOT ATP
   (ATP coverage only applies once a component is wired into a real screen/flow)
+- Root-powered code follows the same split as any other Repository: pure command-building/business-rule
+  objects (`RootProfileCommands`, `RootProcessFreezeCommands`, `NonAllowedPackagesCalculator`) are
+  fully unit tested; the thin `RootShellExecutor`/`LibsuRootShellExecutor` seam that actually calls
+  `su` is not unit tested (same precedent as any Repository impl touching real system/native APIs)
+  and is instead exercised manually on a rooted device. Runtime root-vs-non-root implementation
+  selection (`SystemProfileModule`) is DI wiring, not business logic — not unit tested, not ATP.
 
 Every PR must state which ATP scenarios were added/changed, or explicitly justify "not impacted".
 See `docs/atp/README.md`, `docs/atp/conventions.md`, and `docs/atp/scenarios.md`.

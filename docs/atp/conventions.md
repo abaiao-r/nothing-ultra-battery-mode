@@ -138,3 +138,15 @@ review (see `code-reviewer` agent and PR template's "ATP Scenarios" section).
 - Pure, stateless composables in `:ui-components` -> Compose previews/component tests, not ATP.
 - Pure business-logic formulas/mappers -> unit tests, not ATP (see `.github/instructions/tests.instructions.md`).
 - ATP is reserved for full, user-facing flows spanning Screen -> ViewModel -> UseCase -> Repository.
+- Root-vs-non-root implementation selection and root-shell command execution are infrastructure/DI
+  concerns, not user-facing behavior changes (the Screen/ViewModel/UseCase layers are identical
+  either way) -> covered by unit tests on the pure command/business-rule objects, not ATP. Only add
+  an ATP scenario if a root-only code path introduces an actual new user-visible flow (e.g. a
+  future "Root Mode Active" indicator).
+
+## Current status
+
+No `.feature` files exist yet in this repo — the table below is a **planned** catalog reserved
+during architecture setup, not yet backed by implemented Gherkin scenarios/step definitions. This
+is a known gap (see `internal_docs/project-decisions.md`, local-only). Treat scenario IDs as
+reserved traceability slots to fill in when the corresponding `.feature` file is actually written.

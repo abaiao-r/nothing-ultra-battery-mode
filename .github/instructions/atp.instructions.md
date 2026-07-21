@@ -111,6 +111,17 @@ what a solo project actually needs. Full rationale and rationale-level detail: `
 
 - Pure, stateless composables in `:ui-components` -> Compose previews/component tests, not ATP.
 - Pure business-logic formulas/mappers in isolation -> unit test (`.github/instructions/tests.instructions.md`), not ATP. ATP is for full user-facing flows, not for re-testing a UseCase's internals a second time.
+- Root-vs-non-root implementation selection (Hilt `@Provides` runtime check) and root-shell command
+  execution -> unit tests on the pure command/business-rule objects only, not ATP. These are
+  infrastructure/DI concerns; the user-facing Screen/ViewModel/UseCase flow is identical whether
+  root is available or not, so there is nothing new for ATP to describe unless a root-only feature
+  adds an actual new user-visible flow.
+
+## Known gap
+
+No `.feature` files exist in this repo yet — `docs/atp/scenarios.md` is currently a **planned**
+catalog of reserved scenario IDs, not a record of implemented Gherkin scenarios. Fill in the actual
+`.feature` file and step definitions before relying on ATP as real coverage for a flow.
 
 ## Traceability requirement
 

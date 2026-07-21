@@ -36,7 +36,12 @@ Main and nightly:
 - `:core-data`
 - `:testing-atp`
 
-`core-system` must expose interfaces so future root implementations can plug in without feature-layer rewrites.
+`core-system` exposes interfaces (e.g. `SystemProfileRepository`, `AppLaunchRepository`) so
+implementations can be swapped without feature-layer rewrites. This is no longer just a future
+possibility: `:core-system`/`:core-data` now also contain real root-shell-backed implementations
+(`RootSystemProfileRepositoryImpl`, `RootProcessControlRepositoryImpl`, gated by
+`RootCapabilityRepository`), selected at runtime via a Hilt `@Provides` module — feature modules
+are unaware of which implementation is active.
 
 `ui-components` contains shared, reusable Compose UI: theme tokens (black minimalist theme), buttons, toggles, cards, list rows. Feature modules depend on `ui-components` but never duplicate shared UI logic locally.
 
