@@ -11,6 +11,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // JitPack hosts libsu (topjohnwu), used for root (su) shell access in Ultra Mode's
+        // root-powered features. Not on Maven Central as of writing.
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
