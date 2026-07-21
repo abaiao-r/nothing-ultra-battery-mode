@@ -52,8 +52,11 @@ If the user gives a PR number/URL, use it. Otherwise ask which PR to review. Def
 
 #### Module boundaries
 - Reusable UI must live in `:ui-components`, not duplicated in a feature module.
-- `:core-system` repository interfaces must stay free of no-root-specific assumptions (root-ready
-  design, see `docs/architecture.md`).
+- `:core-system`/`:core-data` repository interfaces must stay implementation-agnostic — feature
+  modules and UseCases must not assume root vs non-root; runtime selection is DI-only (Hilt
+  `@Provides`), never branched on in feature/UI code.
+- Root-only code must live in `:core-system` or `:core-data` behind an existing/new repository
+  interface, never directly in a feature module.
 - New reusable UI components should be in their own PR, not bundled with feature logic.
 
 #### Compose conventions
