@@ -11,13 +11,19 @@ class DisableUltraModeUseCaseTest {
 
     private lateinit var systemProfileRepository: FakeSystemProfileRepository
     private lateinit var ultraModeStateRepository: FakeUltraModeStateRepository
+    private lateinit var rootProcessControlRepository: FakeRootProcessControlRepository
     private lateinit var useCase: DisableUltraModeUseCase
 
     @Before
     fun setUp() {
         systemProfileRepository = FakeSystemProfileRepository()
         ultraModeStateRepository = FakeUltraModeStateRepository(initiallyEnabled = true)
-        useCase = DisableUltraModeUseCase(systemProfileRepository, ultraModeStateRepository)
+        rootProcessControlRepository = FakeRootProcessControlRepository()
+        useCase = DisableUltraModeUseCase(
+            systemProfileRepository,
+            ultraModeStateRepository,
+            rootProcessControlRepository,
+        )
     }
 
     @Test
@@ -39,5 +45,12 @@ class DisableUltraModeUseCaseTest {
         useCase()
 
         assertEquals(0, systemProfileRepository.applyUltraProfileCallCount)
+    }
+
+    @Test
+    fun `WHEN invoked THEN process control sweep is stopped`() = runTest {
+        useCase()
+
+        assertEquals(1, rootProcessControlRepository.stopCallCount)
     }
 }

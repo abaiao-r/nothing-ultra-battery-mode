@@ -2,7 +2,10 @@ package com.abaiaor.ultrasavenothing.ultramode.domain
 
 import com.abaiaor.ultrasavenothing.coresystem.applaunch.AppLaunchRepository
 
-class FakeAppLaunchRepository : AppLaunchRepository {
+class FakeAppLaunchRepository(
+    private val dialerPackageName: String? = null,
+    private val messagingPackageName: String? = null,
+) : AppLaunchRepository {
 
     var launchedPackageName: String? = null
         private set
@@ -22,4 +25,8 @@ class FakeAppLaunchRepository : AppLaunchRepository {
     override fun launchMessagingApp() {
         messagingAppLaunchCount++
     }
+
+    override fun defaultDialerPackageName(): String? = dialerPackageName
+
+    override fun defaultMessagingPackageName(): String? = messagingPackageName
 }

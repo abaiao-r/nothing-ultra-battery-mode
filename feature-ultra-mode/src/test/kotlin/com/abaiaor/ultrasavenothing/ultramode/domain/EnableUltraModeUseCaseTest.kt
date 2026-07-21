@@ -11,13 +11,22 @@ class EnableUltraModeUseCaseTest {
 
     private lateinit var systemProfileRepository: FakeSystemProfileRepository
     private lateinit var ultraModeStateRepository: FakeUltraModeStateRepository
+    private lateinit var rootCapabilityRepository: FakeRootCapabilityRepository
+    private lateinit var rootProcessControlRepository: FakeRootProcessControlRepository
     private lateinit var useCase: EnableUltraModeUseCase
 
     @Before
     fun setUp() {
         systemProfileRepository = FakeSystemProfileRepository()
         ultraModeStateRepository = FakeUltraModeStateRepository(initiallyEnabled = false)
-        useCase = EnableUltraModeUseCase(systemProfileRepository, ultraModeStateRepository)
+        rootCapabilityRepository = FakeRootCapabilityRepository(isRootAvailable = true)
+        rootProcessControlRepository = FakeRootProcessControlRepository()
+        useCase = EnableUltraModeUseCase(
+            systemProfileRepository,
+            ultraModeStateRepository,
+            rootCapabilityRepository,
+            rootProcessControlRepository,
+        )
     }
 
     @Test
@@ -39,5 +48,27 @@ class EnableUltraModeUseCaseTest {
         useCase()
 
         assertEquals(0, systemProfileRepository.revertUltraProfileCallCount)
+    }
+
+    @Test
+    fun `WHEN root is available THEN process control sweep is started`() = runTest {
+        useCase()
+
+        assertEquals(1, rootProcessControlRepository.startCallCount)
+    }
+
+    @Test
+    fun `WHEN root is not available THEN process control sweep is not started`() = runTest {
+        rootCapabilityRepository = FakeRootCapabilityRepository(isRootAvailable = false)
+        useCase = EnableUltraModeUseCase(
+            systemProfileRepository,
+            ultraModeStateRepository,
+            rootCapabilityRepository,
+            rootProcessControlRepository,
+        )
+
+        useCase()
+
+        assertEquals(0, rootProcessControlRepository.startCallCount)
     }
 }

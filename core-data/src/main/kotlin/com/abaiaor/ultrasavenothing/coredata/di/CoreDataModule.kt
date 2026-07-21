@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.abaiaor.ultrasavenothing.coredata.allowlist.AllowlistRepository
 import com.abaiaor.ultrasavenothing.coredata.allowlist.AllowlistRepositoryImpl
+import com.abaiaor.ultrasavenothing.coredata.root.RootProcessControlRepository
+import com.abaiaor.ultrasavenothing.coredata.root.RootProcessControlRepositoryImpl
 import com.abaiaor.ultrasavenothing.coredata.ultramode.UltraModeStateRepository
 import com.abaiaor.ultrasavenothing.coredata.ultramode.UltraModeStateRepositoryImpl
 import dagger.Binds
@@ -51,4 +53,15 @@ internal abstract class AllowlistModule {
     abstract fun bindAllowlistRepository(
         impl: AllowlistRepositoryImpl,
     ): AllowlistRepository
+}
+
+/** Binds [RootProcessControlRepository] to its real root-shell-backed implementation. */
+@Module
+@InstallIn(SingletonComponent::class)
+internal abstract class RootProcessControlModule {
+
+    @Binds
+    abstract fun bindRootProcessControlRepository(
+        impl: RootProcessControlRepositoryImpl,
+    ): RootProcessControlRepository
 }
